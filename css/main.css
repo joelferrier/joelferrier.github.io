@@ -6,8 +6,8 @@
 
 /* Global Reset */
 * {
-  margin: 2;
-  padding: 2;
+  margin: 0;
+  padding: 0;
 }
 
 html, body { height: 100%; }
@@ -72,7 +72,6 @@ a:visited { color: #a0a; }
 .title {
   display: inline-block;
   margin-bottom: 2em;
-  margin-left: 1em;
 }
 
 .title a {
