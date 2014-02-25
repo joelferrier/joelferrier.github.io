@@ -6,17 +6,17 @@
 
 /* Global Reset */
 * {
-  margin: 0;
-  padding: 0;
+  margin: 2;
+  padding: 2;
 }
 
 html, body { height: 100%; }
 
 body {
-  background-color: #FFF;
+  background-color: #EBEEF3;
   font: 13.34px Helvetica, Arial, sans-serif;
   font-size: small;
-  text-align: center;
+  text-align: left;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -59,8 +59,9 @@ a:visited { color: #a0a; }
   font-size: 115%;
   text-align: justify;
   width: 42em;
-  margin: 3em auto 2em;
+  margin: 1em auto 2em;
   line-height: 1.5em;
+  background-color: #EBEEF3;
 }
 
 .header a {
@@ -71,10 +72,11 @@ a:visited { color: #a0a; }
 .title {
   display: inline-block;
   margin-bottom: 2em;
+  margin-left: 1em;
 }
 
 .title a {
-  color: #a00;
+  color: #0E53B8;
 }
 
 .title a:hover {
@@ -82,7 +84,7 @@ a:visited { color: #a0a; }
 }
 
 .header a.extra {
-  color: #aaa;
+  color: #314D76;
   margin-left: 1em;
 }
 
