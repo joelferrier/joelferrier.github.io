@@ -7,8 +7,7 @@
 /* Global Reset */
 * {
   margin: 0;
-  padding: 1em;
-  /*padding: 0;*/
+  padding: 0;
 }
 
 html, body { height: 100%; }
@@ -18,6 +17,7 @@ body {
   font: 13.34px Helvetica, Arial, sans-serif;
   font-size: small;
   text-align: left;
+  padding 1em;
 }
 
 h1, h2, h3, h4, h5, h6 {
