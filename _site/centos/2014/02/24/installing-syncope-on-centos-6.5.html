@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>Installing Syncope on centos 6.5</title>
+        <meta name="viewport" content="width=device-width">
+
+        <!-- syntax highlighting CSS -->
+        <link rel="stylesheet" href="/css/solarized.css">
+
+        <!-- Custom CSS -->
+        <link rel="stylesheet" href="/css/main.css">
+
+    </head>
+    <body>
+
+        <div class="site">
+          <div class="header">
+            <h1 class="title"><a href="/">Joel Ferrier</a></h1>
+            <a class="extra" href="/">home</a>
+            <a class="extra" href="http://soundcloud.com/split45/sets/dustin-fuentes-covers/s-jla6Y#t=0:16">recordings</a>
+            <a class="extra" href="https://github.com/joelferrier">github</a>
+            <a class="extra" href="http://joelferrier.com/blob/gpg.asc">gpg key</a>
+          </div>
+
+          <h2>Installing Syncope on centos 6.5</h2>
+<p class="meta">24 Feb 2014</p>
+
+<div class="post">
+<h3>Install Packages/Maven</h3>
+
+<ul>
+<li>Install packages</li>
+</ul>
+
+<div class="highlight"><pre><code class="bash">sudo yum install -y vim-enhanced unzip wget java-1.7.0-openjdk mysql mysql-server 
+</code></pre></div>
+
+<ul>
+<li>Download and link Apache Maven</li>
+</ul>
+
+<div class="highlight"><pre><code class="bash">wget http://apache.cs.utah.edu/maven/maven-3/3.2.1/binaries/apache-maven-3.2.1-bin.tar.gz -P /tmp
+sudo tar -xvzf /tmp/apache-maven-3.2.1-bin.tar.gz -C /usr/local
+<span class="nb">cd</span> /usr/local
+sudo ln -s apache-maven-3.2.1/bin/mvn /usr/bin/mvn
+</code></pre></div>
+
+<ul>
+<li>Create a file &quot;maven.sh&quot; in the folder /etc/profile.d that contains:</li>
+</ul>
+
+<div class="highlight"><pre><code class="bash"><span class="nb">export </span><span class="nv">M2_HOME</span><span class="o">=</span>/usr/local/maven
+<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="k">${</span><span class="nv">M2_HOME</span><span class="k">}</span>/bin:<span class="k">${</span><span class="nv">PATH</span><span class="k">}</span>
+</code></pre></div>
+
+<ul>
+<li>logout and back in again for the exports to take effect</li>
+</ul>
+
+<h3>Install Tomcat</h3>
+
+<ul>
+<li>download tomcat</li>
+</ul>
+
+<div class="highlight"><pre><code class="bash">wget http://apache.mirrors.pair.com/tomcat/tomcat-7/v7.0.53/bin/apache-tomcat-7.0.53.tar.gz -P /tmp
+sudo tar -xzvf /tmp/apache-tomcat-7.0.53.tar.gz -C /opt
+</code></pre></div>
+
+<ul>
+<li>create an init script &quot;tomcat&quot; in /etc/init.d that contains:</li>
+</ul>
+
+<div class="highlight"><pre><code class="bash"><span class="c">#!/bin/bash</span>
+<span class="c"># Description: Tomcat Start Stop Restart</span>
+<span class="c"># processname: tomcat</span>
+<span class="c"># chkconfig: 234 20 80</span>
+<span class="nv">JAVA_HOME</span><span class="o">=</span>/usr/lib/jvm/java-1.7.0
+<span class="nb">export </span>JAVA_HOME
+<span class="nv">PATH</span><span class="o">=</span><span class="k">${</span><span class="nv">JAVA_HOME</span><span class="k">}</span>/bin:<span class="k">${</span><span class="nv">PATH</span><span class="k">}</span>
+<span class="nb">export </span>PATH
+<span class="nv">CATALINA_HOME</span><span class="o">=</span>/opt/apache-tomcat-7.0.53
+
+<span class="k">case</span> <span class="nv">$1</span> in
+start<span class="o">)</span>
+sh <span class="k">${</span><span class="nv">CATALINA_HOME</span><span class="k">}</span>/bin/startup.sh
+<span class="p">;;</span>
+stop<span class="o">)</span>
+sh <span class="nv">$CATALINA_HOME</span><span class="o">}</span>/bin/shutdown.sh
+<span class="p">;;</span>
+restart<span class="o">)</span>
+sh <span class="k">${</span><span class="nv">CATALINA_HOME</span><span class="k">}</span>/bin/startup.sh
+sh <span class="k">${</span><span class="nv">CATALINA_HOME</span><span class="k">}</span>/bin/shutdown.sh
+<span class="p">;;</span>
+<span class="k">esac</span>
+<span class="nb">exit </span>0
+</code></pre></div>
+
+<ul>
+<li>chmod tomcat startup scripts</li>
+</ul>
+
+<div class="highlight"><pre><code class="bash">sudo chmod +x /opt/apache-tomcat-7.0.53/bin/*.sh
+</code></pre></div>
+
+<ul>
+<li>create iptables rules for tomcat</li>
+</ul>
+
+<div class="highlight"><pre><code class="bash">sudo iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
+sudo /sbin/service iptables save
+</code></pre></div>
+
+<ul>
+<li>create service account, edit conf/tomcat-users.xml and add:</li>
+</ul>
+
+<p><role rolename="admin-gui" />
+<user username="admin" password="${PASSWORD}" roles="manager-gui,admin-gui" /></p>
+
+<h3>Configure mysql</h3>
+
+<ul>
+<li>start mysql</li>
+</ul>
+
+<div class="highlight"><pre><code class="bash">sudo iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
+sudo service mysqld start
+</code></pre></div>
+
+<ul>
+<li>run the mysql secure installation script</li>
+</ul>
+
+<div class="highlight"><pre><code class="bash">sudo iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
+sudo /usr/bin/mysql_secure_installation
+</code></pre></div>
+
+<p>The default root password is blank, change it, and disallow anonymous users and remote root login. Finally remove the test database</p>
+
+<ul>
+<li>set mysql to run at boot</li>
+</ul>
+
+<div class="highlight"><pre><code class="bash">sudo iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
+sudo chkconfig --levels 235 mysqld on
+</code></pre></div>
+
+<ul>
+<li>create syncope database</li>
+</ul>
+
+<div class="highlight"><pre><code class="bash">mysql -u root -p
+</code></pre></div>
+
+<div class="highlight"><pre><code class="mysql"><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">create</span> <span class="k">database</span> <span class="n">syncope</span>
+<span class="n">mysql</span><span class="o">&gt;</span> <span class="k">create</span> <span class="n">user</span> <span class="s1">&#39;syncope&#39;</span><span class="o">@</span><span class="s1">&#39;localhost&#39;</span> <span class="n">identified</span> <span class="k">by</span> <span class="s1">&#39;${syncope_password}&#39;</span><span class="p">;</span>
+<span class="n">mysql</span><span class="o">&gt;</span> <span class="k">grant</span> <span class="k">all</span> <span class="n">privileges</span> <span class="k">on</span> <span class="n">syncope</span><span class="p">.</span><span class="o">*</span> <span class="k">to</span> <span class="s1">&#39;syncope&#39;</span><span class="o">@</span><span class="s1">&#39;localhost&#39;</span><span class="p">;</span>
+<span class="n">mysql</span><span class="o">&gt;</span> <span class="k">exit</span>
+</code></pre></div>
+
+<h3>Install Syncope</h3>
+
+<ul>
+<li>download syncope project and move it to opt</li>
+</ul>
+
+<div class="highlight"><pre><code class="bash"><span class="nb">cd</span> ~/
+sudo mvn archetype:generate <span class="se">\</span>
+-DarchetypeGroupId<span class="o">=</span>org.apache.syncope <span class="se">\</span>
+-DarchetypeArtifactId<span class="o">=</span>syncope-archetype <span class="se">\</span>
+-DarchetypeRepository<span class="o">=</span>http://repo1.maven.org/maven2 <span class="se">\</span>
+-DarchetypeVersion<span class="o">=</span>1.1.6
+mv syncope-enterprise-bus /opt/
+- When prompted supply:
+</code></pre></div>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">1. a groupId like &quot;org.orshakes&quot; 
+2. an artifactId like &quot;syncope-enterprise-bus&quot; 
+3. a version number like &quot;SNAPSHOT-0.1&quot; (if still in development)
+4. a packageName matching the groupid
+5. a random string of 16 characters
+</code></pre></div>
+<ul>
+<li><p>Create two directories in the syncope-enterprise-bus directory, logs and bundles</p></li>
+<li><p>download connID bundles and place them in the bundles directory</p></li>
+</ul>
+
+<div class="highlight"><pre><code class="bash">sudo wget http://central.maven.org/maven2/org/connid/bundles/org.connid.bundles.ldap/1.3.6/org.connid.bundles.ldap-1.3.6.jar -P /opt/syncope-enterprise-bus/bundles
+sudo wget http://central.maven.org/maven2/org/connid/bundles/org.connid.bundles.flatfile/1.2/org.connid.bundles.flatfile-1.2.jar -P /opt/syncope-enterprise-bus/bundles
+sudo wget http://central.maven.org/maven2/org/connid/bundles/org.connid.bundles.ad/1.1.2/org.connid.bundles.ad-1.1.2.jar -P /opt/syncope-enterprise-bus/bundles
+</code></pre></div>
+
+<ul>
+<li>Configure syncope storage edit ${syncope<em>install</em>dir}/core/src/main/resources/persistence.properties Replace the current database configuration with</li>
+</ul>
+
+<div class="highlight"><pre><code class="text">jpa.driverClassName=com.mysql.jdbc.Driver
+jpa.url=jdbc:mysql://localhost:3306/syncope?characterEncoding=UTF-8
+jpa.username=syncope
+jpa.password=S{syncopepass}
+jpa.dialect=org.apache.openjpa.jdbc.sql.MySQLDictionary
+quartz.jobstore=org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+quartz.sql=tables_mysql.sql
+logback.sql=mysql.sql
+</code></pre></div>
+
+<p>ensure that syncope pass has the same value as what you entered into mysql for the syncope user account</p>
+
+<ul>
+<li><p>Edit ${syncope<em>install</em>dir}/core/src/main/webapp/WEB-INF/web.xml and uncomment resource-ref section</p></li>
+<li><p>Configure internal storage with tomcat: edit the file ${Catalina_Home}/conf/context.xml to contain the following:</p></li>
+</ul>
+
+<div class="highlight"><pre><code class="xml"><span class="lineno"> 1</span> <span class="nt">&lt;Resource</span> <span class="na">name=</span><span class="s">&quot;jdbc/syncopeDataSource&quot;</span> <span class="na">auth=</span><span class="s">&quot;Container&quot;</span>
+<span class="lineno"> 2</span> <span class="na">type=</span><span class="s">&quot;javax.sql.DataSource&quot;</span>
+<span class="lineno"> 3</span> <span class="na">factory=</span><span class="s">&quot;org.apache.tomcat.jdbc.pool.DataSourceFactory&quot;</span>
+<span class="lineno"> 4</span> <span class="na">testWhileIdle=</span><span class="s">&quot;true&quot;</span> <span class="na">testOnBorrow=</span><span class="s">&quot;true&quot;</span> <span class="na">testOnReturn=</span><span class="s">&quot;true&quot;</span>
+<span class="lineno"> 5</span> <span class="na">validationQuery=</span><span class="s">&quot;SELECT 1&quot;</span> <span class="na">validationInterval=</span><span class="s">&quot;30000&quot;</span>
+<span class="lineno"> 6</span> <span class="na">maxActive=</span><span class="s">&quot;50&quot;</span> <span class="na">minIdle=</span><span class="s">&quot;2&quot;</span> <span class="na">maxWait=</span><span class="s">&quot;10000&quot;</span> <span class="na">initialSize=</span><span class="s">&quot;2&quot;</span>
+<span class="lineno"> 7</span> <span class="na">removeAbandonedTimeout=</span><span class="s">&quot;20000&quot;</span> <span class="na">removeAbandoned=</span><span class="s">&quot;true&quot;</span>
+<span class="lineno"> 8</span> <span class="na">logAbandoned=</span><span class="s">&quot;true&quot;</span> <span class="na">suspectTimeout=</span><span class="s">&quot;20000&quot;</span>
+<span class="lineno"> 9</span> <span class="na">timeBetweenEvictionRunsMillis=</span><span class="s">&quot;5000&quot;</span> <span class="na">minEvictableIdleTimeMillis=</span><span class="s">&quot;5000&quot;</span>
+<span class="lineno">10</span> <span class="na">jdbcInterceptors=</span><span class="s">&quot;org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;</span>
+<span class="lineno">11</span> <span class="s">org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer&quot;</span>
+<span class="lineno">12</span> <span class="na">username=</span><span class="s">&quot;syncope&quot;</span> <span class="na">password=</span><span class="s">&quot;${syncopepass}&quot;</span>
+<span class="lineno">13</span> <span class="na">driverClassName=</span><span class="s">&quot;com.mysql.jdbc.Driver&quot;</span>
+<span class="lineno">14</span> <span class="na">url=</span><span class="s">&quot;jdbc:mysql://localhost:3306/syncope?characterEncoding=UTF-8&quot;</span><span class="nt">/&gt;</span>
+</code></pre></div>
+
+<p>ensure that syncopepass has the same value as what you entered into mysql for the syncope user account</p>
+
+<ul>
+<li>uncomment the line &quot;<Manager pathname= "" /> in the file above</li>
+<li>download the JDBC driver from the following url and place it in tomcat&#39;s lib directory</li>
+</ul>
+
+<div class="highlight"><pre><code class="bash">wget https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.30.tar.gz
+</code></pre></div>
+
+<h3>Build Syncope</h3>
+
+<ul>
+<li>create a complete syncope project with the following command</li>
+</ul>
+
+<div class="highlight"><pre><code class="bash">sudo mvn clean package -Dbundles.directory<span class="o">=</span>/opt/syncope-enterprise-bus/bundles -Dlog.directory<span class="o">=</span>/opt/syncope-enterprise-bus/logs
+</code></pre></div>
+
+<h3>Configure Admin Account</h3>
+
+<ul>
+<li>After successfully building edit core/src/main/security.properties to change administrator credentials. The default username/pass is admin/password</li>
+<li>passwords are stored as an md5sum of the cleartext password, obtain the hash of a new password with the following command</li>
+</ul>
+
+<div class="highlight"><pre><code class="bash"><span class="nb">echo</span> -n <span class="s2">&quot;new password&quot;</span> <span class="p">|</span> md5sum
+</code></pre></div>
+
+<h3>Deploy Syncope</h3>
+
+<ul>
+<li><p>copy the files <code>core/target/syncope.war</code> and <code>console/target/syncope-console.war</code> to tomcat&#39;s webapps directory</p></li>
+<li><p>tomcat will automagically deploy all of the files required for syncope-core and syncope-console when it is started</p></li>
+</ul>
+
+<div class="highlight"><pre><code class="bash">sudo service tomcat start
+</code></pre></div>
+
+<ul>
+<li>login to the tomcat manager-gui to ensure that both syncope console and syncope core have started</li>
+<li>connect to <code>http://yourtomcatserver:8080/sycnope-console</code> to begin using syncope</li>
+</ul>
+
+</div>
+
+
+          <div class="footer">
+            <div class="contact">
+              <p>
+                email:
+              </p>
+            </div>
+            <div class="contact">
+              <p>
+                jferrier45@gmail.com
+              </p>
+            </div>
+          </div>
+        </div>
+
+    </body>
+</html>
