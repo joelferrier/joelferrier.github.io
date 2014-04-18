@@ -28,6 +28,8 @@
 <p class="meta">24 Feb 2014</p>
 
 <div class="post">
+<hr>
+
 <h3>Install Packages/Maven</h3>
 
 <ul>
@@ -58,6 +60,8 @@ sudo ln -s apache-maven-3.2.1/bin/mvn /usr/bin/mvn
 <ul>
 <li>logout and back in again for the exports to take effect</li>
 </ul>
+
+<hr>
 
 <h3>Install Tomcat</h3>
 
@@ -120,6 +124,8 @@ sudo /sbin/service iptables save
 <p><role rolename="admin-gui" />
 <user username="admin" password="${PASSWORD}" roles="manager-gui,admin-gui" /></p>
 
+<hr>
+
 <h3>Configure mysql</h3>
 
 <ul>
@@ -161,6 +167,8 @@ sudo chkconfig --levels 235 mysqld on
 <span class="n">mysql</span><span class="o">&gt;</span> <span class="k">exit</span>
 </code></pre></div>
 
+<hr>
+
 <h3>Install Syncope</h3>
 
 <ul>
@@ -169,19 +177,25 @@ sudo chkconfig --levels 235 mysqld on
 
 <div class="highlight"><pre><code class="bash"><span class="nb">cd</span> ~/
 sudo mvn archetype:generate <span class="se">\</span>
--DarchetypeGroupId<span class="o">=</span>org.apache.syncope <span class="se">\</span>
--DarchetypeArtifactId<span class="o">=</span>syncope-archetype <span class="se">\</span>
--DarchetypeRepository<span class="o">=</span>http://repo1.maven.org/maven2 <span class="se">\</span>
--DarchetypeVersion<span class="o">=</span>1.1.6
-mv syncope-enterprise-bus /opt/
-- When prompted supply:
+    -DarchetypeGroupId<span class="o">=</span>org.apache.syncope <span class="se">\</span>
+    -DarchetypeArtifactId<span class="o">=</span>syncope-archetype <span class="se">\</span>
+    -DarchetypeRepository<span class="o">=</span>http://repo1.maven.org/maven2 <span class="se">\</span>
+    -DarchetypeVersion<span class="o">=</span>1.1.6
+    mv syncope-enterprise-bus /opt/
 </code></pre></div>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">1. a groupId like &quot;org.orshakes&quot; 
-2. an artifactId like &quot;syncope-enterprise-bus&quot; 
-3. a version number like &quot;SNAPSHOT-0.1&quot; (if still in development)
-4. a packageName matching the groupid
-5. a random string of 16 characters
-</code></pre></div>
+
+<ul>
+<li>When prompted supply:</li>
+</ul>
+
+<ol>
+<li>a groupId like &quot;org.orshakes&quot; </li>
+<li>an artifactId like &quot;syncope-enterprise-bus&quot; </li>
+<li>a version number like &quot;SNAPSHOT-0.1&quot; (if still in development)</li>
+<li>a packageName matching the groupid</li>
+<li>a random string of 16 characters</li>
+</ol>
+
 <ul>
 <li><p>Create two directories in the syncope-enterprise-bus directory, logs and bundles</p></li>
 <li><p>download connID bundles and place them in the bundles directory</p></li>
@@ -193,7 +207,7 @@ sudo wget http://central.maven.org/maven2/org/connid/bundles/org.connid.bundles.
 </code></pre></div>
 
 <ul>
-<li>Configure syncope storage edit ${syncope<em>install</em>dir}/core/src/main/resources/persistence.properties Replace the current database configuration with</li>
+<li>Configure syncope storage edit <code>${syncope_install_dir}/core/src/main/resources/persistence.properties</code> Replace the current database configuration with</li>
 </ul>
 
 <div class="highlight"><pre><code class="text">jpa.driverClassName=com.mysql.jdbc.Driver
@@ -209,7 +223,7 @@ logback.sql=mysql.sql
 <p>ensure that syncope pass has the same value as what you entered into mysql for the syncope user account</p>
 
 <ul>
-<li><p>Edit ${syncope<em>install</em>dir}/core/src/main/webapp/WEB-INF/web.xml and uncomment resource-ref section</p></li>
+<li><p>Edit <code>${syncope_install_dir}/core/src/main/webapp/WEB-INF/web.xml</code> and uncomment resource-ref section</p></li>
 <li><p>Configure internal storage with tomcat: edit the file ${Catalina_Home}/conf/context.xml to contain the following:</p></li>
 </ul>
 
@@ -239,6 +253,8 @@ logback.sql=mysql.sql
 <div class="highlight"><pre><code class="bash">wget https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.30.tar.gz
 </code></pre></div>
 
+<hr>
+
 <h3>Build Syncope</h3>
 
 <ul>
@@ -247,6 +263,8 @@ logback.sql=mysql.sql
 
 <div class="highlight"><pre><code class="bash">sudo mvn clean package -Dbundles.directory<span class="o">=</span>/opt/syncope-enterprise-bus/bundles -Dlog.directory<span class="o">=</span>/opt/syncope-enterprise-bus/logs
 </code></pre></div>
+
+<hr>
 
 <h3>Configure Admin Account</h3>
 
@@ -257,6 +275,8 @@ logback.sql=mysql.sql
 
 <div class="highlight"><pre><code class="bash"><span class="nb">echo</span> -n <span class="s2">&quot;new password&quot;</span> <span class="p">|</span> md5sum
 </code></pre></div>
+
+<hr>
 
 <h3>Deploy Syncope</h3>
 

@@ -63,3 +63,4 @@
 .highlight .ss{color:#990073}
 .highlight .il{color:#009999}
 .highlight div .gd,.highlight div .gd .x,.highlight div .gi,.highlight div .gi .x{display:inline-block;width:100%}
+pre { white-space: pre; overflow: auto; }

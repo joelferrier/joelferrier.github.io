@@ -5,6 +5,7 @@ date: 2014-02-24 10:32:00
 categories: centos
 ---
 
+---
 ### Install Packages/Maven
 - Install packages
 
@@ -30,6 +31,7 @@ export PATH=${M2_HOME}/bin:${PATH}
 
 - logout and back in again for the exports to take effect
 
+---
 ### Install Tomcat
 
 - download tomcat
@@ -41,7 +43,7 @@ sudo tar -xzvf /tmp/apache-tomcat-7.0.53.tar.gz -C /opt
 
 - create an init script "tomcat" in /etc/init.d that contains:
 
-{% highlight bash %}
+{% highlight bash lineno %}
 #!/bin/bash
 # Description: Tomcat Start Stop Restart
 # processname: tomcat
@@ -88,6 +90,7 @@ sudo /sbin/service iptables save
 <role rolename="admin-gui" />
 <user username="admin" password="${PASSWORD}" roles="manager-gui,admin-gui" />
 
+---
 ###Configure mysql
 - start mysql
 
@@ -125,26 +128,27 @@ mysql> grant all privileges on syncope.* to 'syncope'@'localhost';
 mysql> exit
 {% endhighlight %}
 
+---
 ###Install Syncope
 - download syncope project and move it to opt
 
 {% highlight bash %}
 cd ~/
 sudo mvn archetype:generate \
--DarchetypeGroupId=org.apache.syncope \
--DarchetypeArtifactId=syncope-archetype \
--DarchetypeRepository=http://repo1.maven.org/maven2 \
--DarchetypeVersion=1.1.6
-mv syncope-enterprise-bus /opt/
-- When prompted supply:
+    -DarchetypeGroupId=org.apache.syncope \
+    -DarchetypeArtifactId=syncope-archetype \
+    -DarchetypeRepository=http://repo1.maven.org/maven2 \
+    -DarchetypeVersion=1.1.6
+    mv syncope-enterprise-bus /opt/
 {% endhighlight %}
 
+- When prompted supply:
 
-    1. a groupId like "org.orshakes" 
-    2. an artifactId like "syncope-enterprise-bus" 
-    3. a version number like "SNAPSHOT-0.1" (if still in development)
-    4. a packageName matching the groupid
-    5. a random string of 16 characters
+1. a groupId like "org.orshakes" 
+2. an artifactId like "syncope-enterprise-bus" 
+3. a version number like "SNAPSHOT-0.1" (if still in development)
+4. a packageName matching the groupid
+5. a random string of 16 characters
 
 
 - Create two directories in the syncope-enterprise-bus directory, logs and bundles
@@ -157,7 +161,7 @@ sudo wget http://central.maven.org/maven2/org/connid/bundles/org.connid.bundles.
 sudo wget http://central.maven.org/maven2/org/connid/bundles/org.connid.bundles.ad/1.1.2/org.connid.bundles.ad-1.1.2.jar -P /opt/syncope-enterprise-bus/bundles
 {% endhighlight %}
 
-- Configure syncope storage edit ${syncope_install_dir}/core/src/main/resources/persistence.properties Replace the current database configuration with
+- Configure syncope storage edit `${syncope_install_dir}/core/src/main/resources/persistence.properties` Replace the current database configuration with
 
 {% highlight text %}
 jpa.driverClassName=com.mysql.jdbc.Driver
@@ -172,7 +176,7 @@ logback.sql=mysql.sql
 
 ensure that syncope pass has the same value as what you entered into mysql for the syncope user account
 
-- Edit ${syncope_install_dir}/core/src/main/webapp/WEB-INF/web.xml and uncomment resource-ref section
+- Edit `${syncope_install_dir}/core/src/main/webapp/WEB-INF/web.xml` and uncomment resource-ref section
 
 - Configure internal storage with tomcat: edit the file ${Catalina_Home}/conf/context.xml to contain the following:
 
@@ -202,6 +206,7 @@ ensure that syncopepass has the same value as what you entered into mysql for th
 wget https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.30.tar.gz
 {% endhighlight %}
 
+---
 ###Build Syncope
 
 - create a complete syncope project with the following command
@@ -210,6 +215,7 @@ wget https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.30
 sudo mvn clean package -Dbundles.directory=/opt/syncope-enterprise-bus/bundles -Dlog.directory=/opt/syncope-enterprise-bus/logs
 {% endhighlight %}
 
+---
 ###Configure Admin Account
 
 - After successfully building edit core/src/main/security.properties to change administrator credentials. The default username/pass is admin/password
@@ -219,6 +225,7 @@ sudo mvn clean package -Dbundles.directory=/opt/syncope-enterprise-bus/bundles -
 echo -n "new password" | md5sum
 {% endhighlight %}
 
+---
 ###Deploy Syncope
 
 - copy the files `core/target/syncope.war` and `console/target/syncope-console.war` to tomcat's webapps directory
