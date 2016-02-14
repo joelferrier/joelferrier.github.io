@@ -1,1 +1,5 @@
-_site_site/*!_site/.keep.sass-cache/.jekyll-metadata.DS_STORE.localized
+_site
+.sass-cache/
+.jekyll-metadata
+.DS_STORE
+.localized
